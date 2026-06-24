@@ -9,6 +9,9 @@ from sqlalchemy.exc import IntegrityError
 from starlette.datastructures import FormData
 from starlette.responses import Response
 
+from app.config import settings
+from app.models import User
+
 import json
 
 # ======================================================
@@ -95,7 +98,12 @@ app = FastAPI(
 origins = [
     "http://localhost:5173",
     "http://127.0.0.1:5173",
+
+    # Old Vercel Domain
     "https://trade-finance-4ew8.vercel.app",
+
+    # New Vercel Domain
+    "https://blockchain-tradefinance-transactions.vercel.app",
 ]
 
 app.add_middleware(
@@ -178,14 +186,29 @@ async def unhandled_exception_handler(
 @app.on_event("startup")
 def startup():
     db = SessionLocal()
+
     try:
-        create_platform_admin(db)
-        print("")
+        existing = db.query(User).filter(
+            User.email == settings.BOOTSTRAP_ADMIN_EMAIL
+        ).first()
+
+        if not existing:
+            create_platform_admin(
+                db,
+                name="Platform Admin",
+                email=settings.BOOTSTRAP_ADMIN_EMAIL,
+                password=settings.BOOTSTRAP_ADMIN_PASSWORD,
+                org_name=settings.BOOTSTRAP_ADMIN_ORG,
+            )
+            print("Bootstrap admin created")
+        else:
+            print("Bootstrap admin already exists")
+
     except Exception as e:
-        print()
+        print("ADMIN CREATION ERROR:", e)
+
     finally:
         db.close()
-
 # ======================================================
 # SYSTEM HEALTH CHECK
 # ======================================================

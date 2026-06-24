@@ -12,10 +12,9 @@ print("DATABASE_URL =", settings.DATABASE_URL)
 # ======================================================
 engine = create_engine(
     settings.DATABASE_URL,
-    pool_pre_ping=True,   # Prevents stale connections
-    future=True,          # SQLAlchemy 2.x compatibility
+    pool_pre_ping=True,
+    future=True,
 )
-
 # ======================================================
 # SESSION FACTORY
 # ======================================================

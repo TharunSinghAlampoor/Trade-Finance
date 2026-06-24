@@ -1,5 +1,6 @@
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from typing import Optional
+from pathlib import Path
 
 
 class Settings(BaseSettings):
@@ -34,4 +35,12 @@ class Settings(BaseSettings):
     )
 
 
+print("=" * 60)
+print("CURRENT WORKING DIRECTORY:", Path.cwd())
+print("ENV FILE PATH:", Path(".env").resolve())
+print("=" * 60)
+
 settings = Settings()
+
+print("LOADED DATABASE_URL =", settings.DATABASE_URL)
+print("=" * 60)
